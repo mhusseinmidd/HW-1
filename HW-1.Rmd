@@ -32,6 +32,19 @@ states <- read.csv("data/states.csv", stringsAsFactors = FALSE) %>%
 
 
 
+## Admistrative:
+
+Please indicate
+
+* Who you collaborated with:
+* Roughly how much time you spent on this HW:
+* What gave you the most trouble:
+* Any comments you have:
+
+
+
+
+
 ## Question 1:
 
 * Plot a "time series" of the proportion of flights that were delayed by > 30 minutes on each day.  i.e.
