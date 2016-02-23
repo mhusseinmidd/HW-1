@@ -22,8 +22,9 @@ following topics:
     + First revision
     + Due
     + Discussion
-
-    
+1. Commit/push only the `HW-1.Rmd` file (or any other auxilliary file not in the original repo)
+1. Set working directory
+1. To get out of project, change top right.
 
 ## Things to Keep in Mind
 

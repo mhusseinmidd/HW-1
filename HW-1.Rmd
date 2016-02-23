@@ -14,17 +14,17 @@ suppressPackageStartupMessages(library(lubridate))
 
 # Load data sets. Note this assumes this .Rmd files is in the same directory as
 # the .csv files.
-flights <- read.csv("flights.csv", stringsAsFactors = FALSE) %>% 
+flights <- read.csv("data/flights.csv", stringsAsFactors = FALSE) %>% 
   tbl_df() %>%
   mutate(date=as.Date(date))
-weather <- read.csv("weather.csv", stringsAsFactors = FALSE) %>% 
+weather <- read.csv("data/weather.csv", stringsAsFactors = FALSE) %>% 
   tbl_df() %>%
   mutate(date=as.Date(date))
-planes <- read.csv("planes.csv", stringsAsFactors = FALSE) %>% 
+planes <- read.csv("data/planes.csv", stringsAsFactors = FALSE) %>% 
   tbl_df()
-airports <- read.csv("airports.csv", stringsAsFactors = FALSE) %>% 
+airports <- read.csv("data/airports.csv", stringsAsFactors = FALSE) %>% 
   tbl_df()
-states <- read.csv("states.csv", stringsAsFactors = FALSE) %>% 
+states <- read.csv("data/states.csv", stringsAsFactors = FALSE) %>% 
   tbl_df()
 ```
 
