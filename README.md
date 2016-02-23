@@ -17,7 +17,7 @@ following topics:
 
 ## Administrative Notes
 
-1. Please commit/push (i.e. submit) only a **compiling** `HW-1.Rmd` file. If a
+1. Please commit/push (submit) only a **compiling** (working) `HW-1.Rmd` file. If a
 part of your code is not working, comment it out.
 1. Please acknowledge all collaborators, how much time you spent, etc, in the
 Administrative section of `HW-1.Rmd`
@@ -39,7 +39,7 @@ done, start copying things over to the `HW-1.Rmd` file.
 directory of your project:
     + Navigate to the folder `HW-1` in the File panel
     + Click *More* -> *Set As Working Directory*
-1. Work in groups. 
+1. Work in groups. Many people learn to code better in groups.
 1. One skill you'll be developing is having good **programming practices**. For
 example, Google has their own [R Style 
 Guide](https://google-styleguide.googlecode.com/svn/trunk/Rguide.xml). Give it a
