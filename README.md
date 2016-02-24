@@ -11,6 +11,13 @@ following topics:
 * Reproducible research using R Markdown
 * The importance of **Exploratory Data Analysis (EDA)**
 
+The data we'll be looking at is:
+
+* `flights` [227,496 x 14]: Every domestic flight departing Houston in 2011.
+* `weather` [8,723 x 14]: Hourly weather data.
+* `planes` [2,853 x 9]: Plane metadata.
+* `airports` [3,376 x 7]: Airport metadata.
+* `states` [48 x 3]: (Lower 48) state data.
 
 
 
@@ -22,10 +29,11 @@ part of your code is not working, comment it out.
 1. Please acknowledge all collaborators, how much time you spent, etc, in the
 Administrative section of `HW-1.Rmd`
 1. Important dates:
-    + First revision due:
-    + HW due:
-    + Second revision due:
-1. To get out of project, change top right.
+    + **(Optional) Feedback request due:** Wed March 2nd 11:15am
+    + **HW due:** Wed March 9th 11:15am
+    + **Revision due:** Wed March 16th 11:15am. Lecture will be held in the Wilson Media Lab (1st floor of David Library).
+1. We will have a discussion on R Markdown (`.Rmd` files) on Monday 2/29. If you are not familiar with R Markdown, 
+do your work on a separate `.R` script file for now (File -> New File -> R Script).
 
 
 
@@ -45,7 +53,7 @@ example, Google has their own [R Style
 Guide](https://google-styleguide.googlecode.com/svn/trunk/Rguide.xml). Give it a
 look, but don't worry about getting it all right the first time, I'll be giving 
 feedback as the semester progresses.
-1. Google is a programmer's best friend!
+1. Google is a programmer's best friend! [http://xkcd.com/627/](http://xkcd.com/627/)
 1. Do not spin your wheels: Don’t be stuck for more than 20 minutes.
 This takes self-awareness and mindfulness. After 20 minutes of frustration, take
 a break and/or seek help.
