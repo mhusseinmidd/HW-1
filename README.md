@@ -3,8 +3,12 @@
 You are currently in the GitHub repo for HW-1. Please refer to the [HW
 Submission 
 Exercise](https://github.com/Middlebury-Data-Science/HW-0#hw-submission-exercise)
-from HW-0 on how to submit your assignment. This homework will cover the 
-following topics:
+from HW-0 on how to
+
+* Download all the necessary files for this HW via a GitHub fork and creating an RStudio project.
+* Submit your assignment via a GitHub commit/push and then a pull request.
+
+This homework will cover the following topics:
 
 * Data manipulation using `dplyr`
 * Basic data visualization using `ggplot2`
@@ -41,7 +45,7 @@ do your work on a separate `.R` script file for now (File -> New File -> R Scrip
 
 ## Tips
 
-1. It's best to do your initial work in a new R script file and after you're
+1. It's best to do your initial work in a new `.R` script file and after you're
 done, start copying things over to the `HW-1.Rmd` file.
 1. While doing your initial work, set the working directory to be the root
 directory of your project:
