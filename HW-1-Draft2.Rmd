@@ -1,0 +1,311 @@
+---
+title: "MATH 216 Revised Homework 1"
+author: "Mohamed Hussein"
+output: html_document
+---
+
+```{r, echo=FALSE, message=FALSE}
+# DO NOT EDIT THIS SECTION
+
+# Load packages
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(lubridate))
+
+# Load data sets. Note this assumes this .Rmd files is in the same directory as
+# the .csv files.
+flights <- read.csv("data/flights.csv", stringsAsFactors = FALSE) %>% 
+  tbl_df() %>%
+  mutate(date=as.Date(date))
+weather <- read.csv("data/weather.csv", stringsAsFactors = FALSE) %>% 
+  tbl_df() %>%
+  mutate(date=as.Date(date))
+planes <- read.csv("data/planes.csv", stringsAsFactors = FALSE) %>% 
+  tbl_df()
+airports <- read.csv("data/airports.csv", stringsAsFactors = FALSE) %>% 
+  tbl_df()
+states <- read.csv("data/states.csv", stringsAsFactors = FALSE) %>% 
+  tbl_df()
+```
+
+
+
+
+
+## Admistrative:
+
+Please indicate
+
+* Who you collaborated with: Christian Lehner and Andrew Holtz
+* Roughly how much time you spent on this HW: 6.5 hrs
+* What gave you the most trouble: Understanding what objects are legal for what functions/ commands
+* Any comments you have:
+
+
+## Question 1:
+
+* Plot a "time series" of the proportion of flights that were delayed by > 30 
+minutes on each day.  i.e.
+    + the x-axis should be some notion of time
+    + the y-axis should be the proportion.
+* Which seasons did we tend to see the most and least delays of > 30 minutes.
+
+The graphical analysis of the proportion of delayed flights broken down by months
+suggests that late spring and early summer are the seasons with most delays. 
+Specifically, the porportoon of delays increases from 11.5% to 13.2% in the 
+period between May and July. Conversly, autumn seems to witness the least amount
+of delays, fluctuating between 7.5% and 8.5% of all flights. 
+
+
+```{r, echo=FALSE, message=FALSE, fig.width=12, fig.height=6}
+x<-strptime (flights$date, format="%Y-%m-%d")
+
+delays_by_month <- flights %>% 
+  mutate (month=month(x)) %>% 
+  mutate(is_delayed_month=ifelse (dep_delay>=30, 1, 0)) %>% 
+  group_by(month) %>% 
+  mutate(prop_delays_by_month = mean(is_delayed_month, na.rm=TRUE))
+
+#Drawing the graph: 
+ggplot(data=delays_by_month, aes(x = month, y = prop_delays_by_month)) + 
+      geom_line() + 
+      xlab("Month")+
+      ylab("Proportion of Flights Delayed by >30 Mins")+
+      ggtitle("Delayed Flights by Month") +
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))+
+      scale_x_continuous(breaks=c(1:12))
+```
+
+The following graph provides a more detailed picture of the proportions of 
+flights delayed on any given day within each month. In July, the month with the 
+most delays, for instance, we see that the bulk of the delays are concentrated 
+in the last ten days, with the 23rd day having the highest rate of delayed 
+flights, more than 93% 
+
+```{r, echo=FALSE, message=FALSE, fig.width=12, fig.height=12}
+#Delving deeper into what this graph represent: 
+#Define days: 
+delays_by_day <- flights %>% 
+                 mutate (day=mday(x)) %>%
+                 mutate (month=month(x)) %>%
+                 mutate(is_delayed_day=ifelse (dep_delay>=30, 1, 0)) %>% 
+                 group_by(day) %>% 
+                 mutate(prop_delays_by_day = mean(is_delayed_day, na.rm=TRUE))
+
+#Graph days broken down by months: 
+ggplot(data=delays_by_day, aes(x = day, y = prop_delays_by_day)) + 
+      geom_bar(stat="identity") + 
+      ggtitle("Delays by Day by Month") +
+      xlab("Day") +
+      ylab("Proportion of Delays > 30 Mins") +
+      facet_wrap(~month)
+```
+
+
+
+## Question 2:
+
+* Some people prefer flying on older planes.  Even though they aren't as nice,
+they tend to have more room.  Which airlines should these people favor?
+
+In the 1970s, the airline industry witnessed considerable deregulations that
+allowed planes to be produced with less legroom; the average seat pitch has 
+since dropped from 35 inces to 31 inches (http://fortune.com/2015/09/12/airline-seats-shrink/). Consequently, customers who prefer more room should favor flying with Delta, 
+since about 20% of its fleet is composed of airplanes manufactured before 1980. 
+
+Note: This analysis excludes units of observation for which no year of 
+manifacturing could be found
+
+```{r, echo=FALSE, fig.width=12, fig.height=6}
+
+#Proportion of Old Planes per carrier: 
+Planes_per_carrier <- left_join(flights, planes, by="plane") %>% 
+                      filter(!is.na(year)) %>% 
+                      mutate(old_plane=ifelse (year<1980, 1, 0)) %>% 
+                      group_by(carrier) %>% 
+                      summarise(prop_old_plane = mean(old_plane, na.rm=TRUE)) %>% 
+                      mutate(perc_old_plane = round(prop_old_plane*100, 3))
+
+#Graph: 
+ggplot (Planes_per_carrier, aes(x=reorder(carrier, -perc_old_plane), y=perc_old_plane)) +
+        geom_bar(stat="identity") + 
+        xlab("Carrier") +  
+        ylab("Planes Manifactured <1980 (%) ") +
+        ggtitle("Planes <1980 by Carrier") +
+        theme(plot.title = element_text(lineheight=.8, face="bold")) +
+        theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+ 
+```
+
+
+
+## Question 3:
+
+* What states did listed Southwest Airlines flights tend to fly to?
+* What states did all Southwest Airlines flights tend to fly to?
+
+It appears that the highest unique number of flights for WN is to Texas. Specifically, WN operates 770 annual unique flights to destinations in Texas, followed by 297 to Florida and 236 to Louisiana. Although the numbers are different, it appears that WN-operated flights tend to fly to the same three destinations, with 17,230 flights to TX, followed by 3,992 to FL and 3,362 to LA. The order, however, is not identical: WN operates more unique flights to New Mexico than Maryland, even though the oveall traffic of flights operated by WN is higher to Maryland than New Mexico. 
+
+
+```{r, echo=FALSE, message=FALSE, fig.width=12, fig.height=6}
+#Overall: 
+flights_airports<-left_join(flights, airports, by =c("dest"="iata")) %>% 
+                  filter(carrier=="WN") %>% 
+                  group_by(state) %>% 
+                  tally() %>% 
+                  rename (flights_per_state=n) %>% 
+                  arrange (desc(flights_per_state))
+                  
+ggplot(data=flights_airports, aes(x=reorder(state, -flights_per_state), y=flights_per_state)) + 
+      geom_bar(stat="identity") + 
+      xlab("Destination State") +  
+      ylab("Total no. of Flights") + 
+      ggtitle("All Southwest Flights by Destination") +
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+
+
+#Unique flights: 
+flights_airports<- left_join(flights, airports, by =c("dest"="iata")) %>% 
+                    filter(carrier=="WN") %>% 
+                    group_by(state, flight) %>% 
+                    tally() %>% 
+                    rename (state_per_flight=n) %>% 
+                    mutate (flight_indicator=1) %>% 
+                    group_by(state) %>% 
+                    mutate(WN_flights=sum(flight_indicator)) %>% 
+                    group_by(state) %>% 
+                    summarise (WN_flights_final=min (WN_flights)) %>% 
+                    arrange (desc(WN_flights_final))
+
+ggplot(data=flights_airports, aes(x=reorder(state, -WN_flights_final), y=WN_flights_final)) +
+      geom_bar(stat="identity") +
+      xlab("Destination State") + 
+      ylab("Total no. of Unique Flights")+ 
+      ggtitle("Unique Southwest Flights by Destination") +  
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+
+```
+
+
+
+## Question 4:
+
+* What weather patterns are associated with the biggest departure delays?
+
+
+The three graphs show a modest upwards trend, suggestive of the fact that as 
+the weather condition increases in severity, so does the duration of a flight 
+delayed. That is, for flights that were delayed more than 30 minutes (and less 
+than 3 hours), higher temprature (humidity, or windspeed) is correlated with 
+longer delays. It is worth emphasizing that these pictures tell us very little. 
+To understand whether certain weather conditions affect delays, we would need a
+much more robust model, one that takes other covariates into account, as well as 
+potentially a non-linear specififcation. 
+
+```{r, echo=FALSE,  warning=FALSE, message=FALSE, fig.width=12, fig.height=6}
+#Dataframe with flights delayed more than 30 minutes: 
+flights2<-flights %>% 
+  filter(dep_delay>30)
+
+#Dataframe with weather patterns of interest: 
+weather2<-weather %>% 
+  select(date, hour, temp, humidity, wind_speed)
+
+#Joining datasets: 
+flights_weather<-left_join(flights2, weather2, by="date")
+
+#Collapsing on flight: 
+firsts<-flights_weather %>% 
+        group_by(flight) %>% 
+        summarise(temp_first=first(temp), 
+                  humidity_first=first(humidity), 
+                  wind_speed_first=first(wind_speed),
+                  delayed_first=first(dep_delay)) %>% 
+                  filter(delayed_first<180)
+
+ggplot(firsts, aes(x=temp_first, y=delayed_first)) + 
+      geom_point() + geom_smooth(method="lm") + 
+      geom_jitter()+
+      xlab("Temprature at planned departure time (F)") +
+      ylab("Delayed Time") + 
+      ggtitle("Temprature vs. Delays") + 
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+
+ggplot(firsts, aes(x=humidity_first, y=delayed_first)) +
+      geom_point() + geom_smooth(method="lm") + 
+      geom_jitter()+
+      xlab("Humidity at planned departure time") +
+      ylab("Delayed Time")+ 
+      ggtitle("Humidity vs. Delays") + 
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+
+ggplot(firsts, aes(x=wind_speed_first, y=delayed_first))+
+      geom_point() + 
+      geom_jitter()+
+      geom_smooth(method="lm") + 
+      ggtitle("Wind Speed vs. Delays") +  
+      theme(plot.title = element_text(lineheight=.8, face="bold")) +
+      xlab("Wind Speed at planned departure time") + 
+      ylab("Delayed Time (mins)")+ 
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+```
+
+
+
+
+
+## Question 5:
+
+* I want to know what proportionately regions (NE, south, west, midwest) each carrier flies to from Houston in the month of July.  Consider the `month()` function from the `lubridate` package.
+
+The graph below shows the proportion of regions each carrier flies to in the 
+month of July. Notice that the grey color, unreported in the legend, reflects 
+flights for which there was no information on the region of destination. 
+Interestingly, some carriers served only one region: AA, FL, and YV, which 
+flew to the south; AS and F9, which flew to the west; and B6, which flew to the 
+North East. On the other end of the spectrum, airlines like CO, OO, WN flew to 
+all four regions. 
+
+```{r, echo=FALSE, message=FALSE, fig.width=12, fig.height=6}
+#Merge flights with ariports to know which state each airport is located in: 
+flights_airports_states<-left_join(flights, airports, by =c("dest"="iata"))
+flights_airports_states<-left_join(flights_airports_states, states, by ="state")
+x<-strptime (flights_airports_states$date, format="%Y-%m-%d")
+
+#Create regional proportions per carrier: 
+prop_carriers<- flights_airports_states %>% 
+                mutate (month=month(x)) %>% 
+                filter(month==7) %>%
+                group_by(carrier, region) %>%
+                tally() %>% 
+                rename (regional_flights=n)
+
+
+#Create total number of flights per carrier: 
+total_number_flights<-flights_airports_states %>% 
+                      mutate (month=month(x)) %>% 
+                      filter(month==7) %>%
+                      group_by(carrier) %>%
+                      tally() %>% 
+                      rename (TNF=n) 
+
+#Impose the total number of flights per carrier on regional to create proportion:  
+prop_carriers<-left_join(prop_carriers, total_number_flights, by="carrier")
+
+prop_carriers<-prop_carriers %>% 
+  mutate(RPF=round(regional_flights/TNF,3))
+
+#Graph: 
+ggplot(data=prop_carriers, aes(x=carrier, y=RPF, fill = region))+
+      geom_bar(stat="identity")+
+      ylab("Proportion of Regional Flights") +
+      xlab("Carrier") +
+      ggtitle("Regional Flights by Carrier") + 
+      theme(plot.title = element_text(lineheight=.8, face="bold"))+
+      theme(axis.title.y=element_text(margin=margin(0,20,0,0)))
+```
